@@ -1,6 +1,8 @@
 import Foundation
 import ARKit
 
+fileprivate var prevTime:TimeInterval? = nil
+
 extension FlutterArkitView: ARSCNViewDelegate {
     func session(_ session: ARSession, didFailWithError error: Error) {
         logPluginError("sessionDidFailWithError: \(error.localizedDescription)", toChannel: channel)
@@ -68,6 +70,17 @@ extension FlutterArkitView: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        
+        if prevTime == nil {
+            prevTime = time
+        }
+        let dt = time - prevTime!
+        prevTime = time
+        
+        for handler in animHandlers.values {
+            handler.update(dt)
+        }
+
         let params = ["time": NSNumber(floatLiteral: time)]
         self.channel.invokeMethod("updateAtTime", arguments: params)
     }

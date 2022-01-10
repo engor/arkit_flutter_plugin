@@ -103,15 +103,20 @@ class FlutterArkitView: NSObject, FlutterPlatformView {
         case "snapshot":
             onGetSnapshot(result)
             break
+        case "pause":
+            onPause(result)
+            break
+        case "resume":
+            onResume(result)
+            break
+        case "animate":
+            onAnimate(arguments!)
+            result(nil)
+            break
+        
         default:
             result(FlutterMethodNotImplemented)
             break
         }
-    }
-    
-    func onDispose(_ result:FlutterResult) {
-        sceneView.session.pause()
-        self.channel.setMethodCallHandler(nil)
-        result(nil)
     }
 }

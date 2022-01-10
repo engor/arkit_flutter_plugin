@@ -13,6 +13,7 @@ ARKitText _$ARKitTextFromJson(Map<String, dynamic> json) {
     materials: (json['materials'] as List)
         .map((e) => ARKitMaterial.fromJson(e as Map<String, dynamic>))
         .toList(),
+    align: json['align'] as String,
   );
 }
 
@@ -30,5 +31,6 @@ Map<String, dynamic> _$ARKitTextToJson(ARKitText instance) {
   writeNotNull(
       'text', const StringValueNotifierConverter().toJson(instance.text));
   val['extrusionDepth'] = instance.extrusionDepth;
+  val['align'] = instance.align;
   return val;
 }

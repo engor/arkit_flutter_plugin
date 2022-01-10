@@ -46,8 +46,31 @@ extension FlutterArkitView: UIGestureRecognizerDelegate {
             return
         }
         let touchLocation = self.forceTapOnCenter ? self.sceneView.center : recognizer.location(in: sceneView)
-        let hitResults = sceneView.hitTest(touchLocation, options: nil)
-        let results: Array<String> = hitResults.compactMap { $0.node.name }
+        let hitResults = sceneView.hitTest(touchLocation, options: [
+//            SCNHitTestOption.searchMode: SCNHitTestSearchMode.closest,
+//            SCNHitTestOption.ignoreChildNodes: true,
+            SCNHitTestOption.boundingBoxOnly: true
+            
+        ])
+        var results: Array<String> = []
+        
+        for result in hitResults {
+            var node:SCNNode? = result.node
+            var name = ""
+            while (node != nil) {
+                let n = node?.name ?? "---"
+                if n == "rootNode" {
+                    if !results.contains(name) {
+                        results.append(name)
+                    }
+                    break
+                }
+                name = n
+                node = node?.parent
+            }
+        }
+        
+//        let results: Array<String> = hitResults.compactMap { $0.node.name }
         if (results.count != 0) {
             self.channel.invokeMethod("onNodeTap", arguments: results)
         }

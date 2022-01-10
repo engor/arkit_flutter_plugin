@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
+
 import 'package:arkit_plugin/arkit_node.dart';
-import 'package:arkit_plugin/widget/ar_tracking_state.dart';
 import 'package:arkit_plugin/geometries/arkit_anchor.dart';
 import 'package:arkit_plugin/geometries/arkit_box.dart';
 import 'package:arkit_plugin/geometries/arkit_capsule.dart';
@@ -13,19 +14,20 @@ import 'package:arkit_plugin/geometries/arkit_sphere.dart';
 import 'package:arkit_plugin/geometries/arkit_text.dart';
 import 'package:arkit_plugin/geometries/arkit_torus.dart';
 import 'package:arkit_plugin/geometries/arkit_tube.dart';
+import 'package:arkit_plugin/hit/arkit_hit_test_result.dart';
 import 'package:arkit_plugin/hit/arkit_node_pan_result.dart';
 import 'package:arkit_plugin/hit/arkit_node_pinch_result.dart';
 import 'package:arkit_plugin/hit/arkit_node_rotation_result.dart';
 import 'package:arkit_plugin/light/arkit_light_estimate.dart';
 import 'package:arkit_plugin/utils/json_converters.dart';
+import 'package:arkit_plugin/widget/ar_tracking_state.dart';
 import 'package:arkit_plugin/widget/arkit_arplane_detection.dart';
-import 'package:arkit_plugin/hit/arkit_hit_test_result.dart';
 import 'package:arkit_plugin/widget/arkit_configuration.dart';
-import 'package:arkit_plugin/widget/arkit_world_alignment.dart';
 import 'package:arkit_plugin/widget/arkit_reference_image.dart';
+import 'package:arkit_plugin/widget/arkit_world_alignment.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 typedef ARKitPluginCreatedCallback = void Function(ARKitController controller);
@@ -286,6 +288,8 @@ class ARKitController {
   Function(ARTrackingState trackingState, ARTrackingStateReason reason)
       onCameraDidChangeTrackingState;
 
+  Function(String nodeName, String state, double percent) onAnimChanged;
+
   final bool debug;
 
   static const _boolConverter = ValueNotifierConverter();
@@ -296,15 +300,103 @@ class ARKitController {
   static const _stateConverter = ARTrackingStateConverter();
   static const _stateReasonConverter = ARTrackingStateReasonConverter();
 
-  void dispose() {
-    _channel?.invokeMethod<void>('dispose');
+  Future<void> dispose() {
+    return _channel?.invokeMethod<void>('dispose');
+  }
+
+  Future<void> pause() {
+    return _channel?.invokeMethod<void>('pause');
+  }
+
+  Future<void> resume() {
+    return _channel?.invokeMethod<void>('resume');
   }
 
   Future<void> add(ARKitNode node, {String parentNodeName}) {
     assert(node != null);
+
+    if (node.geometry is ARKitText) {
+      return _handleTextNode(node, parentNodeName);
+    }
+
     final params = _addParentNodeNameToParams(node.toMap(), parentNodeName);
     _subsribeToChanges(node);
     return _channel.invokeMethod('addARKitNode', params);
+  }
+
+  Future<void> _handleTextNode(ARKitNode srcNode, String parentNodeName) async {
+    var txt = srcNode.geometry as ARKitText;
+    var str = txt.text.value;
+    var lines = str.split('\n').map((e) => e.trim()).toList(growable: false);
+    var maxWidth = 0.0;
+    var totalHeight = 0.0;
+    var sizesByNode = <ARKitNode, Vector2>{};
+    var lineHeight = 0.0;
+    var lineSpacing = 1.2;
+    for (var line in lines) {
+      var node = ARKitNode(
+        geometry: ARKitText(
+          text: line,
+          extrusionDepth: txt.extrusionDepth,
+          materials: txt.materials.value,
+        ),
+        scale: Vector3.all(1),
+        eulerAngles: Vector3.zero(),
+      );
+
+      var bounds = await getNodeBoundingBox(node);
+      var size = (bounds[1] - bounds[0]).xy;
+      maxWidth = max(maxWidth, size.x);
+      lineHeight = size.y;
+      totalHeight += lineHeight;
+      sizesByNode[node] = size;
+    }
+
+    totalHeight = (lines.length) * lineHeight * lineSpacing; // + lineHeight;
+    lineHeight *= lineSpacing;
+
+    var centeringOffset = Vector2(-maxWidth / 2, totalHeight / 2 - lineHeight),
+        dx = 0.0,
+        dy = 0.0;
+
+    var rootNode = ARKitNode(
+      name: srcNode.name,
+      position: srcNode.position,
+      scale: srcNode.scale,
+      eulerAngles: srcNode.eulerAngles,
+    );
+    final params = _addParentNodeNameToParams(rootNode.toMap(), parentNodeName);
+    _subsribeToChanges(rootNode);
+    await _channel.invokeMethod('addARKitNode', params);
+
+    for (var entry in sizesByNode.entries) {
+      var node = entry.key;
+      var size = entry.value;
+
+      if (size.x <= 0.0001) {
+        dy -= lineHeight;
+        continue;
+      }
+
+      if (txt.align == 'center') {
+        dx = (maxWidth - size.x) / 2.0;
+      } else if (txt.align == 'right') {
+        dx = maxWidth - size.x;
+      } else {
+        dx = 0; // "left" or unknown
+      }
+      node.position = Vector3(
+        centeringOffset.x + dx,
+        centeringOffset.y + dy,
+        0.0,
+      );
+
+      final params = _addParentNodeNameToParams(node.toMap(), rootNode.name);
+      _subsribeToChanges(node);
+      await _channel.invokeMethod('addARKitNode', params);
+
+      dy -= lineHeight;
+    }
   }
 
   Future<void> remove(String nodeName) {
@@ -511,6 +603,15 @@ class ARKitController {
             onCameraDidChangeTrackingState(trackingState, reason);
           }
           break;
+        case 'onAnimChanged':
+          if (onAnimChanged != null) {
+            final String nodeName = call.arguments['nodeName'];
+            final String state = call.arguments['state'];
+            final double percent = call.arguments['percent'];
+
+            onAnimChanged(nodeName, state, percent);
+          }
+          break;
         default:
           if (debug) {
             print('Unknowm method ${call.method} ');
@@ -699,5 +800,15 @@ class ARKitController {
   Future<ImageProvider> snapshot() async {
     final result = await _channel.invokeMethod<Uint8List>('snapshot');
     return MemoryImage(result);
+  }
+
+  Future<void> animate(
+      {String nodeName, List<double> toggle, double progress}) {
+    assert(nodeName != null);
+    return _channel.invokeMethod('animate', {
+      'nodeName': nodeName,
+      'toggle': toggle,
+      'progress': progress,
+    });
   }
 }

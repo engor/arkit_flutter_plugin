@@ -1,6 +1,47 @@
 import ARKit
 
+var animHandlers: Dictionary<String, AnimationHandler> = [:]
+
 extension FlutterArkitView {
+    
+    func onAnimate(_ arguments: Dictionary<String, Any>) {
+        guard let nodeName = arguments["nodeName"] as? String
+            else {
+                logPluginError("deserialization failed", toChannel: channel)
+                return
+        }
+//        if let node = sceneView.scene.rootNode.childNode(withName: nodeName, recursively: true) {
+            print("to animate: \(nodeName)")
+            var handler = animHandlers[nodeName]
+            if handler == nil {
+                let node = sceneView.scene.rootNode.childNode(withName: nodeName, recursively: true)
+                handler = AnimationHandler(view: sceneView, node: node!)
+                handler?.addAllPlayers(node!)
+                animHandlers[nodeName] = handler
+                handler?.animStateListener = {(percent:Double) in
+                    self.channel.invokeMethod("onAnimChanged", arguments: [
+                        "nodeName": nodeName,
+                        "state": "ended",
+                        "percent": percent
+                    ])
+                }
+            }
+            if let handler = handler {
+                if let progress = arguments["progress"] as? Double {
+                    print("set progress")
+                    handler.setProgress(percent: progress)
+                }
+                if let pair = arguments["toggle"] as? Array<Double> {
+                    print("set toggle")
+                    handler.toggleInterval(pair: pair)
+                }
+                
+            }
+//        } else {
+//            logPluginError("node not found", toChannel: channel)
+//        }
+    }
+    
     func onAddNode(_ arguments: Dictionary<String, Any>) {
         let geometryArguments = arguments["geometry"] as? Dictionary<String, Any>
         let geometry = createGeometry(geometryArguments, withDevice: sceneView.device)
@@ -11,6 +52,7 @@ extension FlutterArkitView {
         } else {
             sceneView.scene.rootNode.addChildNode(node)
         }
+        sceneView.sceneTime=1
     }
     
     func onRemoveNode(_ arguments: Dictionary<String, Any>) {
@@ -18,8 +60,10 @@ extension FlutterArkitView {
             logPluginError("nodeName deserialization failed", toChannel: channel)
             return
         }
-        let node = sceneView.scene.rootNode.childNode(withName: nodeName, recursively: true)
-        node?.removeFromParentNode()
+        if let node = sceneView.scene.rootNode.childNode(withName: nodeName, recursively: true) {
+            node.removeFromParentNode()
+            VideoHolder.disposeVideo(node: node)
+        }
     }
   
     func onRemoveAnchor(_ arguments: Dictionary<String, Any>) {
@@ -233,5 +277,23 @@ extension FlutterArkitView {
         } else {
             result(nil)
         }
+    }
+    
+    func onDispose(_ result:FlutterResult) {
+        sceneView.session.pause()
+        self.channel.setMethodCallHandler(nil)
+        result(nil)
+    }
+    
+    func onPause(_ result:FlutterResult) {
+        sceneView.session.pause()
+        VideoHolder.pauseAll()
+        result(nil)
+    }
+    
+    func onResume(_ result:FlutterResult) {
+        sceneView.session.run(sceneView.session.configuration!)
+        VideoHolder.resumeAll()
+        result(nil)
     }
 }

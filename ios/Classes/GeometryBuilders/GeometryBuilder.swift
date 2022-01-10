@@ -146,6 +146,9 @@ fileprivate func parsePropertyContents(_ dict: Any?) -> Any? {
         return nil
     }
     
+    if let videoParams = dict["video"] as? Dictionary<String, Any> {
+        return getVideoByParams(videoParams)
+    }
     if let imageName = dict["image"] as? String {
         return getImageByName(imageName)
     }

@@ -10,6 +10,7 @@ import 'package:arkit_plugin/geometries/material/arkit_fill_mode.dart';
 import 'package:arkit_plugin/geometries/material/arkit_lighting_model.dart';
 import 'package:arkit_plugin/geometries/material/arkit_material.dart';
 import 'package:arkit_plugin/geometries/material/arkit_transparency_mode.dart';
+import 'package:arkit_plugin/geometries/material/arkit_video_params.dart';
 import 'package:arkit_plugin/hit/arkit_hit_test_result_type.dart';
 import 'package:arkit_plugin/light/arkit_light_type.dart';
 import 'package:arkit_plugin/physics/arkit_physics_body_type.dart';
@@ -452,4 +453,16 @@ class MatrixValueNotifierConverter
     matrix.value.copyIntoArray(list);
     return list;
   }
+}
+
+class ARKitVideoParamsConverter
+    implements JsonConverter<ARKitVideoParams, Map<String, dynamic>> {
+  const ARKitVideoParamsConverter();
+
+  @override
+  ARKitVideoParams fromJson(Map<String, dynamic> json) =>
+      ARKitVideoParams.fromJson(json);
+
+  @override
+  Map<String, dynamic> toJson(ARKitVideoParams object) => object?.toJson();
 }

@@ -14,6 +14,7 @@ class ARKitText extends ARKitGeometry {
     @required String text,
     @required this.extrusionDepth,
     List<ARKitMaterial> materials,
+    this.align = 'left',
   })  : text = ValueNotifier(text),
         super(
           materials: materials,
@@ -26,6 +27,8 @@ class ARKitText extends ARKitGeometry {
   /// The extrusion depth.
   /// If the value is 0, we get a mono-sided, 2D version of the text.
   final double extrusionDepth;
+
+  final String align;
 
   static ARKitText fromJson(Map<String, dynamic> json) =>
       _$ARKitTextFromJson(json);
