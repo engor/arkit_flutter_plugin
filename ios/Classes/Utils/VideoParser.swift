@@ -45,7 +45,7 @@ class VideoHolder {
     }
     
     static func store(name:String, holder:VideoHolder, play:Bool = true) {
-        
+
         items[name] = holder
         holder.repeatTimes = 0
         holder.player.volume = holder.volume
@@ -98,12 +98,13 @@ class VideoHolder {
     }
     
     static func disposeVideo(node:SCNNode) {
-        for node in node.childNodes {
-            if let videoScene = node.geometry?.firstMaterial?.diffuse.contents as? SKScene {
-                if let nodeName = videoScene.children[0].name {
-                    disposeVideo(name: nodeName)
-                }
+        if let videoScene = node.geometry?.firstMaterial?.diffuse.contents as? SKScene {
+            if let nodeName = videoScene.children[0].name {
+                disposeVideo(name: nodeName)
             }
+        }
+        for child in node.childNodes {
+          disposeVideo(node: child)
         }
     }
     
