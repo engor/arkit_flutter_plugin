@@ -3,8 +3,8 @@ import 'package:arkit_plugin/light/arkit_light.dart';
 import 'package:arkit_plugin/physics/arkit_physics_body.dart';
 import 'package:arkit_plugin/utils/json_converters.dart';
 import 'package:arkit_plugin/utils/matrix4_ext.dart';
-import 'package:flutter/widgets.dart';
 import 'package:arkit_plugin/utils/random_string.dart' as random_string;
+import 'package:flutter/widgets.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 /// ARKitNode is the model class for node-tree objects.
@@ -74,10 +74,9 @@ class ARKitNode {
   Vector3 get eulerAngles => transform.matrixEulerAngles;
 
   set eulerAngles(Vector3 value) {
-    final old = Matrix4.fromFloat64List(transform.storage);
-    final newT = old.clone();
-    newT.matrixEulerAngles = value;
-    transform = newT;
+    transform = Matrix4.compose(
+        position, Quaternion.euler(value.x, value.y, value.z), scale);
+    ;
   }
 
   final ValueNotifier<Matrix4> transformNotifier;
@@ -114,4 +113,9 @@ class ARKitNode {
         'renderingOrder': renderingOrder,
         'isHidden': _boolValueNotifierConverter.toJson(isHidden),
       }..removeWhere((String k, dynamic v) => v == null);
+
+  void setEulerAnglesAndScale(Vector3 euler, Vector3 scale) {
+    transform = Matrix4.compose(
+        position, Quaternion.euler(euler.x, euler.y, euler.z), scale);
+  }
 }
