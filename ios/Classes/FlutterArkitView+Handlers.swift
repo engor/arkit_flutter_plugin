@@ -54,7 +54,26 @@ extension FlutterArkitView {
         }
         sceneView.sceneTime=1
     }
-    
+  
+    func onUpdateNode(_ arguments: Dictionary<String, Any>) {
+      guard let nodeName = arguments["nodeName"] as? String else {
+          logPluginError("nodeName deserialization failed", toChannel: channel)
+          return
+      }
+      guard let node = sceneView.scene.rootNode.childNode(withName: nodeName, recursively: true) else {
+          logPluginError("node not found", toChannel: channel)
+          return
+      }
+      if let geometryArguments = arguments["geometry"] as? Dictionary<String, Any>,
+         let geometry = createGeometry(geometryArguments, withDevice: sceneView.device) {
+          node.geometry = geometry
+      }
+      if let materials = arguments["materials"] as? Array<Dictionary<String, Any>> {
+          node.geometry?.materials = parseMaterials(materials)
+      }
+      updateNode(node, fromDict: arguments, forDevice: sceneView.device)
+    }
+  
     func onRemoveNode(_ arguments: Dictionary<String, Any>) {
         guard let nodeName = arguments["nodeName"] as? String else {
             logPluginError("nodeName deserialization failed", toChannel: channel)

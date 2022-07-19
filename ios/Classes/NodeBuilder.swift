@@ -8,9 +8,14 @@ func createNode(_ geometry: SCNGeometry?, fromDict dict: Dictionary<String, Any>
     let node = dartType == "ARKitReferenceNode"
         ? createReferenceNode(dict)
         : SCNNode(geometry: geometry)
+updateNode(node, fromDict: dict, forDevice: device)
 
+    return node
+}
+
+func updateNode(_ node: SCNNode, fromDict dict: Dictionary<String, Any>, forDevice device: MTLDevice?) {
     if let transform = dict["transform"] as? Array<NSNumber> {
-      node.transform = deserializeMatrix4(transform)
+        node.transform = deserializeMatrix4(transform)
     }
     
     if let name = dict["name"] as? String {
@@ -32,8 +37,6 @@ func createNode(_ geometry: SCNGeometry?, fromDict dict: Dictionary<String, Any>
     if let isHidden = dict["isHidden"] as? Bool {
         node.isHidden = isHidden
     }
-    
-    return node
 }
 
 fileprivate func createReferenceNode(_ dict: Dictionary<String, Any>) -> SCNReferenceNode {

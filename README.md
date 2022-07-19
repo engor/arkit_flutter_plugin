@@ -1,4 +1,5 @@
-# arkit_flutter_plugin
+![logo](./logo.png)
+
 [![Codemagic build status](https://api.codemagic.io/apps/5cb0a01178f5790010ab6978/5cb0a01178f5790010ab6977/status_badge.svg)](https://codemagic.io/apps/5cb0a01178f5790010ab6978/5cb0a01178f5790010ab6977/latest_build) [![flutter awesome](https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square)](https://github.com/Solido/awesome-flutter)
 [![pub package](https://img.shields.io/pub/v/arkit_plugin.svg)](https://pub.dartlang.org/packages/arkit_plugin)
 
@@ -16,12 +17,6 @@ ARKit uses the device camera, so do not forget to provide the `NSCameraUsageDesc
 ```xml
     <key>NSCameraUsageDescription</key>
     <string>Describe why your app needs AR here.</string>
-```
-
-Prior to Flutter 1.22, platform views were in developers preview, hence if you want to use the plugin with old Flutter versions you need to add the following code to `Info.plist`:
-```xml
-    <key>io.flutter.embedded_views_preview</key>
-    <string>YES</string>
 ```
 
 ### Update Podfile
@@ -61,11 +56,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ARKitController arkitController;
+  late ARKitController arkitController;
 
   @override
   void dispose() {
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -88,13 +83,15 @@ Result:
 
 ## Examples
 
-I would highly recommend to review the [sample](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/main.dart) from the `Example` folder. You may find a couple of samples in the `Example` folder of the plugin. Some samples rely on [this Earth image](https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg)
+I would highly recommend to review the [sample](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/main.dart) from the `Example` folder inside the plugin. Some samples rely on [this Earth image](https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg)
 
 | Name        | Description                                          | Link | Demo |
 |-------------|------------------------------------------------------|------------------------------------------------------|----|
 | Hello World | The simplest scene with different geometries.           | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/hello_world.dart)| [twitter](https://twitter.com/OlexaLe/status/1118441432707149824) |
+| Check configuration | Shows which kinds of AR configuration are supported on the device | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/check_support_page.dart)|  |
 | Earth       | Sphere with an image texture and rotation animation. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/earth_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1118441432707149824) |
 | Tap         | Sphere which handles tap event.                      | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/tap_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1118441432707149824) |
+| Midas         | Turns walls, floor, and Earth itself into gold by tap.                      | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/midas_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1401561106552967173) |
 | Plane Detection | Detects horizontal plane. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/plane_detection_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1118870195743883266) |
 | Distance tracking | Detects horizontal plane and track distance on it. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/distance_tracking_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1121022506180149248) |
 | Measure | Measures distances | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/measure_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1121022506180149248) |
@@ -103,19 +100,26 @@ I would highly recommend to review the [sample](https://github.com/olexale/arkit
 | Network Image Detection | Detects Mars photo and puts a 3D object near it. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/network_image_detection.dart) | |
 | Custom Light | Hello World scene with a custom light spot. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/custom_light_page.dart) | |
 | Light Estimation | Estimates and applies the light around you. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/light_estimate_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1120671744426221573) |
-| Custom Object | Place custom object on plane. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/custom_object_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1121037162852569090) |
+| Custom Object | Place custom object on plane with coaching overlay. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/custom_object_page.dart) | [twitter](https://twitter.com/OlexaLe/status/1121037162852569090) |
 | Occlusion | Spheres which are not visible after horizontal and vertical planes. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/occlusion_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1121421315364274177) |
 | Manipulation | Custom objects with pinch and rotation events. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/manipulation_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1123893412279791616) |
 | Face Tracking | Face mask sample. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/face_detection_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1143483440278454277) |
+| Body Tracking | Dash that follows your hand. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/body_tracking_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1449408839393087494) |
 | Panorama | 360 photo. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/panorama_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1154665277654781952) |
+| Video | 360 video. | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/video_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1406997587132026885) |
 | Custom Animation | Custom object animation. Port of https://github.com/eh3rrera/ARKitAnimation | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/custom_animation_page.dart)|[twitter](https://twitter.com/OlexaLe/status/1173587705206366209) |
 | Widget Projection | Flutter widgets in AR | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/widget_projection.dart)|[twitter](https://twitter.com/OlexaLe/status/1174678765592567814) |
+| Real Time Updates | Calls a function once per frame | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/real_time_updates.dart)| |
+| Snapshot | Make a photo of AR content | [code](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/snapshot_scene.dart)| |
 
 If you prefer video here is a playlist with "AR in Flutter" videos:
+
 [![AR in Flutter videos](https://img.youtube.com/vi/gOgCdl5_E7k/0.jpg)](https://www.youtube.com/watch?v=MaH4L6R8ZfQ&list=PLjaSBcAZ8TqGoWj3FE96uQ2gGPDGaXbDp "AR in Flutter videos")
 
 ## UX advice
 You might want to check the device capabilities before establishing an AR session. Review the [Check Support](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/check_support_page.dart) sample for the implementation details.
+
+If your app requires placing objects consider using coaching overlays. Review the [Custom Object](https://github.com/olexale/arkit_flutter_plugin/blob/master/example/lib/custom_object_page.dart) sample for the implementation details.
 
 ## Before you go to AppStore
 The plugin supports TrueDepth API. In case you didn't use it, your app will be rejected by Apple. Hence you need to remove any TrueDepth functionality by modifying your `Podfile` file

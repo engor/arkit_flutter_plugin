@@ -8,13 +8,12 @@ class CustomObjectPage extends StatefulWidget {
 }
 
 class _CustomObjectPageState extends State<CustomObjectPage> {
-  ARKitController arkitController;
-  ARKitReferenceNode node;
-  String anchorId;
+  late ARKitController arkitController;
+  ARKitReferenceNode? node;
 
   @override
   void dispose() {
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -32,7 +31,8 @@ class _CustomObjectPageState extends State<CustomObjectPage> {
 
   void onARKitViewCreated(ARKitController arkitController) {
     this.arkitController = arkitController;
-    this.arkitController.onAddNodeForAnchor = _handleAddAnchor;
+    arkitController.addCoachingOverlay(CoachingOverlayGoal.horizontalPlane);
+    arkitController.onAddNodeForAnchor = _handleAddAnchor;
   }
 
   void _handleAddAnchor(ARKitAnchor anchor) {
@@ -42,14 +42,13 @@ class _CustomObjectPageState extends State<CustomObjectPage> {
   }
 
   void _addPlane(ARKitController controller, ARKitPlaneAnchor anchor) {
-    anchorId = anchor.identifier;
     if (node != null) {
-      controller.remove(node.name);
+      controller.remove(node!.name);
     }
     node = ARKitReferenceNode(
       url: 'models.scnassets/dash.dae',
       scale: vector.Vector3.all(0.3),
     );
-    controller.add(node, parentNodeName: anchor.nodeName);
+    controller.add(node!, parentNodeName: anchor.nodeName);
   }
 }

@@ -10,13 +10,13 @@ class EarthPage extends StatefulWidget {
 }
 
 class _EarthPageState extends State<EarthPage> {
-  ARKitController arkitController;
-  Timer timer;
+  late ARKitController arkitController;
+  Timer? timer;
 
   @override
   void dispose() {
     timer?.cancel();
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -35,7 +35,7 @@ class _EarthPageState extends State<EarthPage> {
 
     final material = ARKitMaterial(
       lightingModelName: ARKitLightingModel.lambert,
-      diffuse: ARKitMaterialProperty(image: 'earth.jpg'),
+      diffuse: ARKitMaterialProperty.image('earth.jpg'),
     );
     final sphere = ARKitSphere(
       materials: [material],

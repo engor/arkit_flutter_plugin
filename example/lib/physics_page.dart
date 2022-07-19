@@ -9,11 +9,11 @@ class PhysicsPage extends StatefulWidget {
 }
 
 class _PhysicsPageState extends State<PhysicsPage> {
-  ARKitController arkitController;
+  late ARKitController arkitController;
 
   @override
   void dispose() {
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -32,7 +32,7 @@ class _PhysicsPageState extends State<PhysicsPage> {
 
   void _addSphere(ARKitController controller) {
     final material =
-        ARKitMaterial(diffuse: ARKitMaterialProperty(color: Colors.blue));
+        ARKitMaterial(diffuse: ARKitMaterialProperty.color(Colors.blue));
     final sphere = ARKitSphere(materials: [material], radius: 0.1);
     final node = ARKitNode(
         geometry: sphere,
@@ -50,7 +50,7 @@ class _PhysicsPageState extends State<PhysicsPage> {
       height: 2,
       materials: [
         ARKitMaterial(
-          diffuse: ARKitMaterialProperty(color: Colors.green),
+          diffuse: ARKitMaterialProperty.color(Colors.green),
         )
       ],
     );

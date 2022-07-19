@@ -8,11 +8,11 @@ class CustomLightPage extends StatefulWidget {
 }
 
 class _CustomLightPageState extends State<CustomLightPage> {
-  ARKitController arkitController;
+  late ARKitController arkitController;
 
   @override
   void dispose() {
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -50,9 +50,7 @@ class _CustomLightPageState extends State<CustomLightPage> {
   void _addSphere(ARKitController controller) {
     final material = ARKitMaterial(
       lightingModelName: ARKitLightingModel.physicallyBased,
-      diffuse: ARKitMaterialProperty(
-        color: Colors.red,
-      ),
+      diffuse: ARKitMaterialProperty.color(Colors.red),
     );
     final sphere = ARKitSphere(
       materials: [material],
@@ -72,7 +70,7 @@ class _CustomLightPageState extends State<CustomLightPage> {
       materials: [
         ARKitMaterial(
           transparency: 0.5,
-          diffuse: ARKitMaterialProperty(color: Colors.white),
+          diffuse: ARKitMaterialProperty.color(Colors.white),
         )
       ],
     );
@@ -89,7 +87,7 @@ class _CustomLightPageState extends State<CustomLightPage> {
       extrusionDepth: 1,
       materials: [
         ARKitMaterial(
-          diffuse: ARKitMaterialProperty(color: Colors.blue),
+          diffuse: ARKitMaterialProperty.color(Colors.blue),
         )
       ],
     );

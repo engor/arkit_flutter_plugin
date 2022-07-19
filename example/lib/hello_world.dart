@@ -9,11 +9,11 @@ class HelloWorldPage extends StatefulWidget {
 }
 
 class _HelloWorldPagState extends State<HelloWorldPage> {
-  ARKitController arkitController;
+  late ARKitController arkitController;
 
   @override
   void dispose() {
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -23,7 +23,11 @@ class _HelloWorldPagState extends State<HelloWorldPage> {
         title: const Text('ARKit in Flutter'),
       ),
       body: Container(
-        child: ARKitSceneView(onARKitViewCreated: onARKitViewCreated),
+        child: ARKitSceneView(
+          onARKitViewCreated: onARKitViewCreated,
+          environmentTexturing:
+              ARWorldTrackingConfigurationEnvironmentTexturing.automatic,
+        ),
       ));
 
   void onARKitViewCreated(ARKitController arkitController) {
@@ -54,7 +58,7 @@ class _HelloWorldPagState extends State<HelloWorldPage> {
       materials: [
         ARKitMaterial(
           transparency: 0.5,
-          diffuse: ARKitMaterialProperty(color: Colors.white),
+          diffuse: ARKitMaterialProperty.color(Colors.white),
         )
       ],
     );
@@ -70,7 +74,7 @@ class _HelloWorldPagState extends State<HelloWorldPage> {
       extrusionDepth: 1,
       materials: [
         ARKitMaterial(
-          diffuse: ARKitMaterialProperty(color: Colors.blue),
+          diffuse: ARKitMaterialProperty.color(Colors.blue),
         )
       ],
     );
@@ -142,13 +146,15 @@ class _HelloWorldPagState extends State<HelloWorldPage> {
         position: vector.Vector3(0.1, 0, -0.5),
       );
 
+  final _rnd = math.Random();
   List<ARKitMaterial> _createRandomColorMaterial() {
     return [
       ARKitMaterial(
         lightingModelName: ARKitLightingModel.physicallyBased,
-        diffuse: ARKitMaterialProperty(
-          color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt() << 0)
-              .withOpacity(1.0),
+        metalness: ARKitMaterialProperty.value(_rnd.nextDouble()),
+        roughness: ARKitMaterialProperty.value(_rnd.nextDouble()),
+        diffuse: ARKitMaterialProperty.color(
+          Color((_rnd.nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
         ),
       )
     ];

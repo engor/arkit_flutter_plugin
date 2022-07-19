@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.0.5
+
+* Fix Face detection and Body tracking deserialization errors
+* Add `ARKitSkeletonJointName` and helper methods for `ARKitSkeleton`
+* Add Body tracking sample
+
+## 1.0.4
+
+* Add coaching overlay (by @HadiIOS)
+
+## 1.0.3
+
+* Fix null safety errors (by @daniel-possienke, @ssp)
+* Fix onCameraDidChangeTrackingState (by @dokkaebi)
+* Port example app to null safety
+* Update README
+
+## 1.0.2
+
+* BREAKING CHANGE! Split ARKitMaterialProperty to separate color, image, value, and video properties
+* Add video material
+
+## 1.0.1
+
+* Add `update` function that may override geometry materials and node properties
+* Fix earth and panorama samples
+
+## 1.0.0
+
+* Add possibility to set metalness and roughness properties for materials
+* Add environmentTexturing property for ARWorldTrackingConfiguration
+
+## 1.0.0-nullsafety.0
+
+* Migrate to null safety
+* Update documentation (by @Flucadetena)
+* Fix link in README (by @koldunsky)
+
 ## 0.6.2
 
 * Camera snapshots (by @leeprobert)

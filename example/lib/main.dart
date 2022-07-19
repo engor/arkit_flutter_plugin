@@ -1,3 +1,4 @@
+import 'package:arkit_plugin_example/body_tracking_page.dart';
 import 'package:arkit_plugin_example/check_support_page.dart';
 import 'package:arkit_plugin_example/custom_animation_page.dart';
 import 'package:arkit_plugin_example/custom_object_page.dart';
@@ -9,6 +10,7 @@ import 'package:arkit_plugin_example/image_detection_page.dart';
 import 'package:arkit_plugin_example/light_estimate_page.dart';
 import 'package:arkit_plugin_example/manipulation_page.dart';
 import 'package:arkit_plugin_example/measure_page.dart';
+import 'package:arkit_plugin_example/midas_page.dart';
 import 'package:arkit_plugin_example/network_image_detection.dart';
 import 'package:arkit_plugin_example/occlusion_page.dart';
 import 'package:arkit_plugin_example/physics_page.dart';
@@ -17,6 +19,7 @@ import 'package:arkit_plugin_example/snapshot_scene.dart';
 import 'package:arkit_plugin_example/tap_page.dart';
 import 'package:arkit_plugin_example/face_detection_page.dart';
 import 'package:arkit_plugin_example/panorama_page.dart';
+import 'package:arkit_plugin_example/video_page.dart';
 import 'package:arkit_plugin_example/widget_projection.dart';
 import 'package:arkit_plugin_example/real_time_updates.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +57,13 @@ class MyApp extends StatelessWidget {
         Icons.touch_app,
         () => Navigator.of(context)
             .push<void>(MaterialPageRoute(builder: (c) => TapPage())),
+      ),
+      Sample(
+        'Midas',
+        'Turns walls, floor, and Earth itself into gold by tap.',
+        Icons.touch_app,
+        () => Navigator.of(context)
+            .push<void>(MaterialPageRoute(builder: (c) => MidasPage())),
       ),
       Sample(
         'Plane Detection',
@@ -113,7 +123,7 @@ class MyApp extends StatelessWidget {
       ),
       Sample(
         'Custom Object',
-        'Place custom object on plane.',
+        'Place custom object on plane with coaching overlay.',
         Icons.nature,
         () => Navigator.of(context)
             .push<void>(MaterialPageRoute(builder: (c) => CustomObjectPage())),
@@ -140,11 +150,25 @@ class MyApp extends StatelessWidget {
             .push<void>(MaterialPageRoute(builder: (c) => FaceDetectionPage())),
       ),
       Sample(
+        'Body Tracking',
+        'Dash that follows your hand.',
+        Icons.person,
+        () => Navigator.of(context)
+            .push<void>(MaterialPageRoute(builder: (c) => BodyTrackingPage())),
+      ),
+      Sample(
         'Panorama',
         '360 photo sample.',
         Icons.panorama,
         () => Navigator.of(context)
             .push<void>(MaterialPageRoute(builder: (c) => PanoramaPage())),
+      ),
+      Sample(
+        'Video',
+        '360 video sample.',
+        Icons.videocam,
+        () => Navigator.of(context)
+            .push<void>(MaterialPageRoute(builder: (c) => VideoPage())),
       ),
       Sample(
         'Custom Animation',
@@ -187,7 +211,10 @@ class MyApp extends StatelessWidget {
 }
 
 class SampleItem extends StatelessWidget {
-  const SampleItem({Key key, this.item}) : super(key: key);
+  const SampleItem({
+    required this.item,
+    Key? key,
+  }) : super(key: key);
   final Sample item;
 
   @override

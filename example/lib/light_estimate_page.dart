@@ -10,13 +10,13 @@ class LightEstimatePage extends StatefulWidget {
 }
 
 class _LightEstimatePageState extends State<LightEstimatePage> {
-  ARKitController arkitController;
-  Timer timer;
+  late ARKitController arkitController;
+  Timer? timer;
 
   @override
   void dispose() {
     timer?.cancel();
-    arkitController?.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
@@ -34,7 +34,7 @@ class _LightEstimatePageState extends State<LightEstimatePage> {
     this.arkitController = arkitController;
 
     final material = ARKitMaterial(
-      diffuse: ARKitMaterialProperty(image: 'earth.jpg'),
+      diffuse: ARKitMaterialProperty.image('earth.jpg'),
     );
     final sphere = ARKitSphere(
       materials: [material],

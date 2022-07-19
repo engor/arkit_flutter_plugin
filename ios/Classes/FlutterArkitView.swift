@@ -38,12 +38,28 @@ class FlutterArkitView: NSObject, FlutterPlatformView {
             onAddNode(arguments!)
             result(nil)
             break
+        case "onUpdateNode":
+            onUpdateNode(arguments!)
+            result(nil)
+            break
         case "removeARKitNode":
             onRemoveNode(arguments!)
             result(nil)
             break
         case "removeARKitAnchor":
             onRemoveAnchor(arguments!)
+            result(nil)
+            break
+        case "addCoachingOverlay":
+            if #available(iOS 13.0, *) {
+              addCoachingOverlay(arguments!)
+            }
+            result(nil)
+            break
+        case "removeCoachingOverlay":
+            if #available(iOS 13.0, *) {
+              removeCoachingOverlay()
+            }
             result(nil)
             break
         case "getNodeBoundingBox":
