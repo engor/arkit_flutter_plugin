@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
+
 import 'package:arkit_plugin/src/arkit_node.dart';
 import 'package:arkit_plugin/src/enums/coaching_overlay_goal.dart';
-import 'package:arkit_plugin/src/geometries/material/arkit_material.dart';
-import 'package:arkit_plugin/src/widget/ar_environment_texturing.dart';
-import 'package:arkit_plugin/src/widget/ar_tracking_state.dart';
 import 'package:arkit_plugin/src/geometries/arkit_anchor.dart';
 import 'package:arkit_plugin/src/geometries/arkit_box.dart';
 import 'package:arkit_plugin/src/geometries/arkit_capsule.dart';
@@ -17,40 +14,19 @@ import 'package:arkit_plugin/src/geometries/arkit_sphere.dart';
 import 'package:arkit_plugin/src/geometries/arkit_text.dart';
 import 'package:arkit_plugin/src/geometries/arkit_torus.dart';
 import 'package:arkit_plugin/src/geometries/arkit_tube.dart';
+import 'package:arkit_plugin/src/geometries/material/arkit_material.dart';
+import 'package:arkit_plugin/src/hit/arkit_hit_test_result.dart';
 import 'package:arkit_plugin/src/hit/arkit_node_pan_result.dart';
 import 'package:arkit_plugin/src/hit/arkit_node_pinch_result.dart';
 import 'package:arkit_plugin/src/hit/arkit_node_rotation_result.dart';
 import 'package:arkit_plugin/src/light/arkit_light_estimate.dart';
 import 'package:arkit_plugin/src/utils/json_converters.dart';
+import 'package:arkit_plugin/src/widget/ar_environment_texturing.dart';
+import 'package:arkit_plugin/src/widget/ar_tracking_state.dart';
 import 'package:arkit_plugin/src/widget/arkit_arplane_detection.dart';
-import 'package:arkit_plugin/src/hit/arkit_hit_test_result.dart';
 import 'package:arkit_plugin/src/widget/arkit_configuration.dart';
-import 'package:arkit_plugin/src/widget/arkit_world_alignment.dart';
 import 'package:arkit_plugin/src/widget/arkit_reference_image.dart';
-
-import 'package:arkit_plugin/arkit_node.dart';
-import 'package:arkit_plugin/geometries/arkit_anchor.dart';
-import 'package:arkit_plugin/geometries/arkit_box.dart';
-import 'package:arkit_plugin/geometries/arkit_capsule.dart';
-import 'package:arkit_plugin/geometries/arkit_cone.dart';
-import 'package:arkit_plugin/geometries/arkit_cylinder.dart';
-import 'package:arkit_plugin/geometries/arkit_plane.dart';
-import 'package:arkit_plugin/geometries/arkit_pyramid.dart';
-import 'package:arkit_plugin/geometries/arkit_sphere.dart';
-import 'package:arkit_plugin/geometries/arkit_text.dart';
-import 'package:arkit_plugin/geometries/arkit_torus.dart';
-import 'package:arkit_plugin/geometries/arkit_tube.dart';
-import 'package:arkit_plugin/hit/arkit_hit_test_result.dart';
-import 'package:arkit_plugin/hit/arkit_node_pan_result.dart';
-import 'package:arkit_plugin/hit/arkit_node_pinch_result.dart';
-import 'package:arkit_plugin/hit/arkit_node_rotation_result.dart';
-import 'package:arkit_plugin/light/arkit_light_estimate.dart';
-import 'package:arkit_plugin/utils/json_converters.dart';
-import 'package:arkit_plugin/widget/ar_tracking_state.dart';
-import 'package:arkit_plugin/widget/arkit_arplane_detection.dart';
-import 'package:arkit_plugin/widget/arkit_configuration.dart';
-import 'package:arkit_plugin/widget/arkit_reference_image.dart';
-import 'package:arkit_plugin/widget/arkit_world_alignment.dart';
+import 'package:arkit_plugin/src/widget/arkit_world_alignment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -330,7 +306,7 @@ class ARKitController {
   /// For example, when coaching is deactivated, your app might restore custom UI.
   VoidCallback? coachingOverlayViewDidDeactivate;
 
-  Function(String nodeName, String state, double percent) onAnimChanged;
+  Function(String nodeName, String state, double percent)? onAnimChanged;
 
   final bool debug;
 
@@ -347,11 +323,11 @@ class ARKitController {
   }
 
   Future<void> pause() {
-    return _channel?.invokeMethod<void>('pause');
+    return _channel.invokeMethod<void>('pause');
   }
 
   Future<void> resume() {
-    return _channel?.invokeMethod<void>('resume');
+    return _channel.invokeMethod<void>('resume');
   }
 
   Future<void> add(ARKitNode node, {String? parentNodeName}) {
@@ -379,7 +355,8 @@ class ARKitController {
     return _channel.invokeMethod('onUpdateNode', params);
   }
 
-  Future<void> _handleTextNode(ARKitNode srcNode, String parentNodeName) async {
+  Future<void> _handleTextNode(
+      ARKitNode srcNode, String? parentNodeName) async {
     var txt = srcNode.geometry as ARKitText;
     var str = txt.text.value;
     var lines = str.split('\n').map((e) => e.trim()).toList(growable: false);
@@ -407,7 +384,7 @@ class ARKitController {
       sizesByNode[node] = size;
     }
 
-    totalHeight = (lines.length) * lineHeight * lineSpacing; // + lineHeight;
+    totalHeight = (lines.length) * lineHeight * lineSpacing;
     lineHeight *= lineSpacing;
 
     var centeringOffset = Vector2(-maxWidth / 2, totalHeight / 2 - lineHeight),
@@ -671,7 +648,7 @@ class ARKitController {
             final String state = call.arguments['state'];
             final double percent = call.arguments['percent'];
 
-            onAnimChanged(nodeName, state, percent);
+            onAnimChanged?.call(nodeName, state, percent);
           }
           break;
         default:
@@ -864,9 +841,11 @@ class ARKitController {
     return MemoryImage(result!);
   }
 
-  Future<void> animate(
-      {String nodeName, List<double> toggle, double progress}) {
-    assert(nodeName != null);
+  Future<void> animate({
+    required String nodeName,
+    List<double>? toggle,
+    double? progress,
+  }) {
     return _channel.invokeMethod('animate', {
       'nodeName': nodeName,
       'toggle': toggle,

@@ -29,16 +29,22 @@ abstract class ARKitMaterialProperty {
   static ARKitMaterialVideo video({
     required int width,
     required int height,
+    required String name,
     String? filename,
     String? url,
-    bool? autoplay = true,
+    bool autoplay = true,
+    int repeat = -1,
+    double volume = 0.7,
   }) =>
       ARKitMaterialVideo(
         filename: filename,
         url: url,
         width: width,
         height: height,
-        autoplay: autoplay ?? true,
+        autoplay: autoplay,
+        name: name,
+        repeat: repeat,
+        volume: volume,
       );
 
   final String type;
@@ -115,10 +121,14 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
   ARKitMaterialVideo({
     required this.width,
     required this.height,
+    required this.name,
     this.autoplay = true,
     this.filename,
     this.url,
-  })  : id = UniqueKey().toString(),
+    this.repeat = -1,
+    this.volume = 0.7,
+  })
+      : id = UniqueKey().toString(),
         super._('video');
 
   final String? filename;
@@ -126,7 +136,9 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
   final int width;
   final int height;
   final bool autoplay;
-
+  final int repeat;
+  final String name;
+  final double volume;
   final String id;
 
   static const MethodChannel _channel = MethodChannel('arkit_video_playback');
@@ -146,5 +158,6 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
 
   @override
   Map<String, dynamic> toJson() =>
-      _$ARKitMaterialVideoToJson(this)..addAll({'id': id});
+      _$ARKitMaterialVideoToJson(this)
+        ..addAll({'id': id});
 }

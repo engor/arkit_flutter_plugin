@@ -146,10 +146,7 @@ fileprivate func parsePropertyContents(_ dict: Any?) -> Any? {
     return nil
   }
 
-  if let videoParams = dict["video"] as? Dictionary<String, Any> {
-        return getVideoByParams(videoParams)
-    }
-    if let imageName = dict["image"] as? String {
+  if let imageName = dict["image"] as? String {
     return getImageByName(imageName)
   }
   if let color = dict["color"] as? Int {
@@ -160,29 +157,8 @@ fileprivate func parsePropertyContents(_ dict: Any?) -> Any? {
   }
   if let width = dict["width"] as? Int,
      let height = dict["height"] as? Int,
-     let autoplay = dict["autoplay"] as? Bool,
-     let id = dict["id"] as? String {
-    var videoNode:SKVideoNode
-    if let videoFilename = dict["filename"] as? String {
-      videoNode = SKVideoNode(fileNamed: videoFilename)
-    } else if let url = dict["url"] as? String,
-              let videoUrl = URL(string: url) {
-      videoNode = SKVideoNode(url: videoUrl)
-    } else {
-      return nil
-    }
-    VideoArkitPlugin.nodes[id] = videoNode
-    if (autoplay) {
-      videoNode.play()
-    }
-
-
-    let skScene = SKScene(size: CGSize(width: width, height: height))
-    skScene.addChild(videoNode)
-
-    videoNode.position = CGPoint(x: skScene.size.width/2, y: skScene.size.height/2)
-    videoNode.size = skScene.size
-    return skScene
+     let autoplay = dict["autoplay"] as? Bool {
+    return getVideoByParams(dict)
   }
   return nil
 }

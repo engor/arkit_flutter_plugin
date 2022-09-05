@@ -41,6 +41,7 @@ class _VideoPageState extends State<VideoPage> {
     this.arkitController = arkitController;
 
     _video = ARKitMaterialProperty.video(
+      name: 'london',
       width: 640,
       height: 320,
       filename: 'london.mp4',

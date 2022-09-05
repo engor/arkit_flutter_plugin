@@ -44,9 +44,12 @@ Map<String, dynamic> _$ARKitMaterialValueToJson(ARKitMaterialValue instance) =>
 ARKitMaterialVideo _$ARKitMaterialVideoFromJson(Map json) => ARKitMaterialVideo(
       width: json['width'] as int,
       height: json['height'] as int,
+      name: json['name'] as String,
       autoplay: json['autoplay'] as bool? ?? true,
       filename: json['filename'] as String?,
       url: json['url'] as String?,
+      repeat: json['repeat'] as int? ?? -1,
+      volume: (json['volume'] as num?)?.toDouble() ?? 0.7,
     );
 
 Map<String, dynamic> _$ARKitMaterialVideoToJson(ARKitMaterialVideo instance) {
@@ -63,5 +66,8 @@ Map<String, dynamic> _$ARKitMaterialVideoToJson(ARKitMaterialVideo instance) {
   val['width'] = instance.width;
   val['height'] = instance.height;
   val['autoplay'] = instance.autoplay;
+  val['repeat'] = instance.repeat;
+  val['name'] = instance.name;
+  val['volume'] = instance.volume;
   return val;
 }

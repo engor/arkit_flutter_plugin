@@ -12,7 +12,7 @@ ARKitText _$ARKitTextFromJson(Map json) => ARKitText(
       materials: (json['materials'] as List<dynamic>?)
           ?.map((e) => ARKitMaterial.fromJson(e as Map))
           .toList(),
-      align: json['align'] as String,
+      align: json['align'] as String? ?? 'left',
     );
 
 Map<String, dynamic> _$ARKitTextToJson(ARKitText instance) {

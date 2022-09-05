@@ -79,7 +79,6 @@ class ARKitNode {
   set eulerAngles(Vector3 value) {
     transform = Matrix4.compose(
         position, Quaternion.euler(value.x, value.y, value.z), scale);
-    ;
   }
 
   final ValueNotifier<Matrix4> transformNotifier;

@@ -12,6 +12,7 @@ func getVideoByParams(_ params: Dictionary<String, Any>) -> SKScene? {
     
     let width = params["width"] as! Double
     let height = params["height"] as! Double
+    let autoplay = params["autoplay"] as! Bool
     let size = CGSize(width: width, height: height)
     let videoNode = SKVideoNode(avPlayer: avPlayer)
     videoNode.size = size
@@ -26,7 +27,7 @@ func getVideoByParams(_ params: Dictionary<String, Any>) -> SKScene? {
     holder.repeatCount = params["repeat"] as! Int
     holder.volume = Float(params["volume"] as! Double)
     
-    VideoHolder.store(name: name, holder: holder, play: true)
+   VideoHolder.store(name: name, holder: holder, play: autoplay)
 
     return skScene
 }
@@ -45,18 +46,17 @@ class VideoHolder {
     }
     
     static func store(name:String, holder:VideoHolder, play:Bool = true) {
-
         items[name] = holder
         holder.repeatTimes = 0
         holder.player.volume = holder.volume
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(VideoHolder.playerItemDidReachEnd(notification:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: holder.player.currentItem
         )
-        
+
         if play {
             playVideo(holder)
         }
