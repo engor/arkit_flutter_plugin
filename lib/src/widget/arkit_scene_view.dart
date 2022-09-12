@@ -836,7 +836,7 @@ class ARKitController {
     return vector3;
   }
 
-  Future<ImageProvider> snapshot() async {
+  Future<MemoryImage> snapshot() async {
     final result = await _channel.invokeMethod<Uint8List>('snapshot');
     return MemoryImage(result!);
   }
