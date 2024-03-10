@@ -13,6 +13,8 @@ func getVideoByParams(_ params: Dictionary<String, Any>) -> SKScene? {
     let width = params["width"] as! Double
     let height = params["height"] as! Double
     let autoplay = params["autoplay"] as! Bool
+    let chromaKeyColor = params["chromaKeyColor"] as? String
+    
     let size = CGSize(width: width, height: height)
     let videoNode = SKVideoNode(avPlayer: avPlayer)
     videoNode.size = size
@@ -20,16 +22,82 @@ func getVideoByParams(_ params: Dictionary<String, Any>) -> SKScene? {
     videoNode.name = name
 
     let skScene = SKScene(size: size)
-    skScene.addChild(videoNode)
     skScene.scaleMode = .aspectFit
+    skScene.backgroundColor = UIColor.clear
+
+    if chromaKeyColor == nil {
+        skScene.addChild(videoNode)
+    } else {
+        let effectNode = SKEffectNode()
+        effectNode.filter = colorCubeFilterForChromaKey(color: chromaKeyColor!)
+        effectNode.addChild(videoNode)
+        skScene.addChild(effectNode)
+    }
     
     let holder = VideoHolder(player: avPlayer)
     holder.repeatCount = params["repeat"] as! Int
     holder.volume = Float(params["volume"] as! Double)
     
-   VideoHolder.store(name: name, holder: holder, play: autoplay)
+    VideoHolder.store(name: name, holder: holder, play: autoplay)
 
     return skScene
+}
+
+
+func RGBtoHSV(r : Float, g : Float, b : Float) -> (h : Float, s : Float, v : Float) {
+    var h : CGFloat = 0
+    var s : CGFloat = 0
+    var v : CGFloat = 0
+    let col = UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+    col.getHue(&h, saturation: &s, brightness: &v, alpha: nil)
+    return (Float(h), Float(s), Float(v))
+}
+
+func colorCubeFilterForChromaKey(color: String) -> CIFilter {
+
+    let hue = RGBtoHSV(
+        r: Float(Int(color.substring(with: 0..<2), radix: 16)!)/255,
+        g: Float(Int(color.substring(with: 2..<4), radix: 16)!)/255,
+        b: Float(Int(color.substring(with: 4..<6), radix: 16)!)/255
+    )
+    
+    let hueRange: Float = 60.0 / 360 // degrees size pie shape that we want to replace
+    let minHueAngle: Float = 0.3 - hueRange/2.0
+    let maxHueAngle: Float = 0.3 + hueRange/2.0
+
+    let size = 64
+    var cubeData = [Float](repeating: 0, count: size * size * size * 4)
+    var rgb: [Float] = [0, 0, 0]
+    var hsv: (h : Float, s : Float, v : Float)
+    var offset = 0
+
+    for z in 0 ..< size {
+        rgb[2] = Float(z) / Float(size) // blue value
+        for y in 0 ..< size {
+            rgb[1] = Float(y) / Float(size) // green value
+            for x in 0 ..< size {
+
+                rgb[0] = Float(x) / Float(size) // red value
+                hsv = RGBtoHSV(r: rgb[0], g: rgb[1], b: rgb[2])
+                // the condition checking hsv.s may need to be removed for your use-case
+                let alpha: Float = (hsv.h > minHueAngle && hsv.h < maxHueAngle && hsv.s > 0.5) ? 0 : 1.0
+
+                cubeData[offset] = rgb[0] * alpha
+                cubeData[offset + 1] = rgb[1] * alpha
+                cubeData[offset + 2] = rgb[2] * alpha
+                cubeData[offset + 3] = alpha
+                offset += 4
+            }
+        }
+    }
+    let b = cubeData.withUnsafeBufferPointer { Data(buffer: $0) }
+    let data = b as NSData
+
+    let colorCube = CIFilter(name: "CIColorCube", parameters: [
+        "inputCubeDimension": size,
+        "inputCubeData": data
+    ])
+    return colorCube!
 }
 
 

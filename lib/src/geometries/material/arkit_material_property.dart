@@ -35,6 +35,7 @@ abstract class ARKitMaterialProperty {
     bool autoplay = true,
     int repeat = -1,
     double volume = 0.7,
+    String? chromaKeyColor = null,
   }) =>
       ARKitMaterialVideo(
         filename: filename,
@@ -45,6 +46,7 @@ abstract class ARKitMaterialProperty {
         name: name,
         repeat: repeat,
         volume: volume,
+        chromaKeyColor: chromaKeyColor
       );
 
   final String type;
@@ -127,6 +129,7 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
     this.url,
     this.repeat = -1,
     this.volume = 0.7,
+    this.chromaKeyColor = null,
   })
       : id = UniqueKey().toString(),
         super._('video');
@@ -140,6 +143,7 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
   final String name;
   final double volume;
   final String id;
+  final String? chromaKeyColor;
 
   static const MethodChannel _channel = MethodChannel('arkit_video_playback');
 

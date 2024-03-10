@@ -6,7 +6,8 @@ part of 'arkit_material_property.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ARKitMaterialColor _$ARKitMaterialColorFromJson(Map json) => ARKitMaterialColor(
+ARKitMaterialColor _$ARKitMaterialColorFromJson(Map json) =>
+    ARKitMaterialColor(
       const ColorConverter().fromJson(json['color'] as int),
     );
 
@@ -23,7 +24,8 @@ Map<String, dynamic> _$ARKitMaterialColorToJson(ARKitMaterialColor instance) {
   return val;
 }
 
-ARKitMaterialImage _$ARKitMaterialImageFromJson(Map json) => ARKitMaterialImage(
+ARKitMaterialImage _$ARKitMaterialImageFromJson(Map json) =>
+    ARKitMaterialImage(
       json['image'] as String,
     );
 
@@ -32,7 +34,8 @@ Map<String, dynamic> _$ARKitMaterialImageToJson(ARKitMaterialImage instance) =>
       'image': instance.image,
     };
 
-ARKitMaterialValue _$ARKitMaterialValueFromJson(Map json) => ARKitMaterialValue(
+ARKitMaterialValue _$ARKitMaterialValueFromJson(Map json) =>
+    ARKitMaterialValue(
       (json['value'] as num).toDouble(),
     );
 
@@ -41,7 +44,8 @@ Map<String, dynamic> _$ARKitMaterialValueToJson(ARKitMaterialValue instance) =>
       'value': instance.value,
     };
 
-ARKitMaterialVideo _$ARKitMaterialVideoFromJson(Map json) => ARKitMaterialVideo(
+ARKitMaterialVideo _$ARKitMaterialVideoFromJson(Map json) =>
+    ARKitMaterialVideo(
       width: json['width'] as int,
       height: json['height'] as int,
       name: json['name'] as String,
@@ -50,6 +54,7 @@ ARKitMaterialVideo _$ARKitMaterialVideoFromJson(Map json) => ARKitMaterialVideo(
       url: json['url'] as String?,
       repeat: json['repeat'] as int? ?? -1,
       volume: (json['volume'] as num?)?.toDouble() ?? 0.7,
+      chromaKeyColor: json['chromaKeyColor'] as String?,
     );
 
 Map<String, dynamic> _$ARKitMaterialVideoToJson(ARKitMaterialVideo instance) {
@@ -69,5 +74,6 @@ Map<String, dynamic> _$ARKitMaterialVideoToJson(ARKitMaterialVideo instance) {
   val['repeat'] = instance.repeat;
   val['name'] = instance.name;
   val['volume'] = instance.volume;
+  val['chromaKeyColor'] = instance.chromaKeyColor;
   return val;
 }
