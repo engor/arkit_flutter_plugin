@@ -7,6 +7,7 @@ import SceneKit
 func getVideoByParams(_ params: Dictionary<String, Any>) -> SKScene? {
     let url = URL(fileURLWithPath: params["url"] as! String)
     let avPlayerItem = AVPlayerItem(asset: AVAsset(url: url))
+    
     let name = params["name"] as! String
     let avPlayer = AVPlayer(playerItem: avPlayerItem)
     
@@ -23,11 +24,11 @@ func getVideoByParams(_ params: Dictionary<String, Any>) -> SKScene? {
 
     let skScene = SKScene(size: size)
     skScene.scaleMode = .aspectFit
-    skScene.backgroundColor = UIColor.clear
 
     if chromaKeyColor == nil {
         skScene.addChild(videoNode)
     } else {
+        skScene.backgroundColor = UIColor.clear
         let effectNode = SKEffectNode()
         effectNode.filter = colorCubeFilterForChromaKey(color: chromaKeyColor!)
         effectNode.addChild(videoNode)
@@ -149,8 +150,10 @@ class VideoHolder {
     }
     
     private static func playVideo(_ holder:VideoHolder) {
-        holder.player.currentItem?.seek(to: CMTime.zero, completionHandler: nil)
-        holder.player.play()
+        DispatchQueue.main.async {
+            holder.player.currentItem?.seek(to: CMTime.zero, completionHandler: nil)
+            holder.player.play()
+        }
     }
     
     static func pauseVideo(_ name:String) {
