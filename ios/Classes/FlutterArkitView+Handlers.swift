@@ -81,7 +81,6 @@ extension FlutterArkitView {
         }
         if let node = sceneView.scene.rootNode.childNode(withName: nodeName, recursively: true) {
             node.removeFromParentNode()
-            VideoHolder.disposeVideo(node: node)
         }
     }
   
@@ -299,14 +298,15 @@ extension FlutterArkitView {
     }
     
     func onDispose(_ result:FlutterResult) {
+        VideoHolder.disposeAll()
         sceneView.session.pause()
         self.channel.setMethodCallHandler(nil)
         result(nil)
     }
     
     func onPause(_ result:FlutterResult) {
-        sceneView.session.pause()
         VideoHolder.pauseAll()
+        sceneView.session.pause()
         result(nil)
     }
     

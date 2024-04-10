@@ -181,7 +181,9 @@ class VideoHolder {
     
     static func disposeVideo(name:String) {
         pauseVideo(name)
-        items.removeValue(forKey: name)
+        
+        let holder = items.removeValue(forKey: name)
+        holder?.player.replaceCurrentItem(with: nil)
     }
     
     static func pauseAll() {
@@ -197,7 +199,8 @@ class VideoHolder {
     }
     
     static func disposeAll() {
-        pauseAll()
-        items.removeAll()
+        for name in items.keys {
+            disposeVideo(name: name)
+        }
     }
 }

@@ -38,16 +38,15 @@ abstract class ARKitMaterialProperty {
     String? chromaKeyColor = null,
   }) =>
       ARKitMaterialVideo(
-        filename: filename,
-        url: url,
-        width: width,
-        height: height,
-        autoplay: autoplay,
-        name: name,
-        repeat: repeat,
-        volume: volume,
-        chromaKeyColor: chromaKeyColor
-      );
+          filename: filename,
+          url: url,
+          width: width,
+          height: height,
+          autoplay: autoplay,
+          name: name,
+          repeat: repeat,
+          volume: volume,
+          chromaKeyColor: chromaKeyColor);
 
   final String type;
 
@@ -130,8 +129,7 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
     this.repeat = -1,
     this.volume = 0.7,
     this.chromaKeyColor = null,
-  })
-      : id = UniqueKey().toString(),
+  })  : id = UniqueKey().toString(),
         super._('video');
 
   final String? filename;
@@ -147,21 +145,24 @@ class ARKitMaterialVideo extends ARKitMaterialProperty {
 
   static const MethodChannel _channel = MethodChannel('arkit_video_playback');
 
-  void dispose() {
-    _channel.invokeMethod<void>('dispose', {'id': id});
+  Future<void> dispose() {
+    return _channel.invokeMethod<void>('dispose', {'id': id});
   }
 
   /// Starts video playback.
-  Future<void> play() => _channel.invokeMethod<void>('play', {'id': id});
+  Future<void> play() {
+    return _channel.invokeMethod<void>('play', {'id': id});
+  }
 
   /// Pauses video playback.
-  Future<void> pause() => _channel.invokeMethod<void>('pause', {'id': id});
+  Future<void> pause() {
+    return _channel.invokeMethod<void>('pause', {'id': id});
+  }
 
   static ARKitMaterialVideo fromJson(Map<String, dynamic> json) =>
       _$ARKitMaterialVideoFromJson(json);
 
   @override
   Map<String, dynamic> toJson() =>
-      _$ARKitMaterialVideoToJson(this)
-        ..addAll({'id': id});
+      _$ARKitMaterialVideoToJson(this)..addAll({'id': id});
 }
